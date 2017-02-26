@@ -1,0 +1,28 @@
+{
+  "name": "destinytrialsstats",
+  "version": "1.0.0",
+  "description": "A Destiny API wrapper for nodeJS for Trials Of Osiris stats",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KillerDucks/destinyTrialsStats.git"
+  },
+  "keywords": [
+    "KillerDucks",
+    "Destiny",
+    "TrialsOfOsiris",
+    "Bungie"
+  ],
+  "author": "Nimesh Patel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KillerDucks/destinyTrialsStats/issues"
+  },
+  "homepage": "https://github.com/KillerDucks/destinyTrialsStats#readme",
+  "dependencies": {
+    "needle": "^1.4.5"
+  }
+}
