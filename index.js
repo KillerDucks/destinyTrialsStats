@@ -6,12 +6,22 @@ let characters = [];
 
 //Options
 let quiet = false;
+let APIKey = "";
 
 class destinyTrialsStats {
-  makePost(gamerTag = "TacticalNexus4", type = "getTrials" ,cb){
+  constructor(opts){
+    if(opts['apikey'] == "" | opts['apikey'] == undefined){
+      console.log("You need a Steam API key to use this libary");
+      process.exit(0);
+    } else {
+      APIKey = opts['apikey'];
+    }
+  }
+
+  makePost(gamerTag = "TacticalNexus4", type = "getTrials", chars = "0" , cb){
     var options = {
         headers: {
-          'X-API-Key': '1d7e2d7bb0db43618efa3993660282ae'
+          'X-API-Key': APIKey
         }
       }
 
@@ -31,7 +41,7 @@ class destinyTrialsStats {
         break;
 
       case "getTrials":
-        needle.get('https://www.bungie.net/platform/Destiny/Stats/1/4611686018452351232/2305843009326756237/?modes=TrialsOfOsiris', options, function(err, resp){
+        needle.get('https://www.bungie.net/platform/Destiny/Stats/1/' + gamerTag + '/' + chars + '/?modes=TrialsOfOsiris', options, function(err, resp){
           if(err) throw err;
           cb(resp.body);
         });
@@ -41,16 +51,18 @@ class destinyTrialsStats {
 
   }
 
-  getMyKD(gt, char, cb){
-    this.getMemberID(gt, (mID) =>{
-      this.makePost(mID, undefined, function(data){
-        cb(data['Response']['trialsOfOsiris']['allTime']['killsDeathsRatio']);
-      });
+  getMyTrialsKD(gt, cb){
+    this.getDestMemberID(gt, (mID) =>{
+      for(let i in characters){
+        this.makePost(mID, undefined, characters[i] ,function(data){
+          cb(data['Response']['trialsOfOsiris']['allTime']['killsDeathsRatio']['basic']['displayValue']);
+        });
+      }
     });
   }
 
   getBungMemberID(gt, cb){
-    this.makePost(gt, "getBungAcc", (data) =>{
+    this.makePost(gt, "getBungAcc", "3" ,(data) =>{
       for(let i in data){
         if(data['Response'][0]['xboxDisplayName'] == gt){
           cb(data['Response'][0]['membershipId']);
@@ -66,13 +78,13 @@ class destinyTrialsStats {
       we will pull the Destiny membership ID and all the players characters a put that into an array
     **/
     this.getBungMemberID(gt, (bID) =>{
-      this.makePost(bID, "getDestAcc", (data) =>{
+      this.makePost(bID, "getDestAcc", "3" ,(data) =>{
         //Push the character ID's to the characters Array
-        for(let i in data){
-          console.log(data['Response']['destinyAccounts'][0]['characters'][0]);
+        for(let i in data['Response']['destinyAccounts'][0]['characters']){
+          characters.push(data['Response']['destinyAccounts'][0]['characters'][i]['characterId']);
         }
         //Return Destiny ID
-        //cb(data['Response']['destinyAccounts'][0]['userInfo']);
+        cb(data['Response']['destinyAccounts'][0]['userInfo']['membershipId']);
       });
     });
   }
